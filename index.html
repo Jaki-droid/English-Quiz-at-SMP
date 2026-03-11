@@ -3,1178 +3,536 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>English Quest – SMP Fun Quiz!</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>English Quest – SMP Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --green:   #2DC653;
-    --yellow:  #FFD600;
-    --orange:  #FF7043;
-    --blue:    #2196F3;
-    --purple:  #9C27B0;
-    --pink:    #E91E8C;
-    --bg:      #FFF8E1;
-    --card:    #FFFFFF;
-    --text:    #1A1A2E;
-    --shadow:  0 8px 32px rgba(0,0,0,0.13);
-  }
+:root{
+  --green:#22C55E;--yellow:#FACC15;--orange:#F97316;
+  --blue:#3B82F6;--indigo:#6366F1;--pink:#EC4899;--red:#EF4444;
+  --bg:#F0F9FF;--card:#FFFFFF;--text:#1E293B;--muted:#64748B;
+  --radius:20px;--shadow:0 10px 40px rgba(0,0,0,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden;color:var(--text);}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* Animated background blobs */
+.blob-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:0.18;animation:blobFloat 10s ease-in-out infinite alternate;}
+.b1{width:420px;height:420px;background:var(--blue);top:-100px;left:-100px;animation-duration:12s;}
+.b2{width:360px;height:360px;background:var(--green);bottom:-80px;right:-80px;animation-duration:9s;animation-delay:2s;}
+.b3{width:280px;height:280px;background:var(--yellow);top:40%;left:50%;animation-duration:14s;animation-delay:1s;}
+@keyframes blobFloat{from{transform:translate(0,0) scale(1);}to{transform:translate(28px,18px) scale(1.08);}}
 
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--bg);
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-  }
+/* Screen system */
+.screen{display:none;position:relative;z-index:1;}
+.screen.active{display:block;}
 
-  /* === CONFETTI BG === */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      radial-gradient(circle at 10% 20%, #FFD60033 0%, transparent 40%),
-      radial-gradient(circle at 90% 80%, #2DC65333 0%, transparent 40%),
-      radial-gradient(circle at 50% 50%, #2196F311 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
+/* ── WELCOME ── */
+#welcome{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;}
+.hero-card{background:var(--card);border-radius:28px;padding:2.8rem 2.4rem;max-width:500px;width:100%;box-shadow:var(--shadow);border-top:6px solid var(--blue);animation:slideUp .5s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(32px);}to{opacity:1;transform:translateY(0);}}
+.hero-icon{width:68px;height:68px;background:linear-gradient(135deg,var(--blue),var(--indigo));border-radius:18px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:1.9rem;box-shadow:0 8px 24px rgba(99,102,241,.35);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+.hero-card h1{font-family:'Fredoka One',cursive;font-size:2.2rem;color:var(--text);text-align:center;margin-bottom:.3rem;}
+.hero-card h1 span{color:var(--orange);}
+.hero-sub{text-align:center;color:var(--muted);font-size:.95rem;font-weight:600;margin-bottom:1.4rem;}
+.pill-row{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:1.6rem;}
+.pill{padding:.28rem .85rem;border-radius:999px;font-size:.75rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.4px;}
+.p1{background:var(--green);}.p2{background:var(--blue);}.p3{background:var(--indigo);}.p4{background:var(--pink);}
+.name-input{width:100%;padding:.85rem 1.1rem;border:2.5px solid #E2E8F0;border-radius:14px;font-size:1rem;font-family:'Nunito',sans-serif;font-weight:700;outline:none;transition:border-color .2s,box-shadow .2s;background:#F8FAFC;color:var(--text);margin-bottom:1rem;}
+.name-input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(59,130,246,.12);}
+.btn-start{width:100%;padding:.95rem;background:linear-gradient(135deg,var(--orange),var(--pink));color:#fff;border:none;border-radius:14px;font-family:'Fredoka One',cursive;font-size:1.15rem;cursor:pointer;letter-spacing:.5px;box-shadow:0 6px 20px rgba(249,115,22,.38);transition:transform .15s,box-shadow .15s;}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(249,115,22,.45);}
+.info-row{display:flex;justify-content:center;gap:1.2rem;margin-top:1.2rem;font-size:.8rem;font-weight:700;color:var(--muted);}
+.idot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;}
 
-  .floating-emoji {
-    position: fixed;
-    font-size: 2rem;
-    opacity: 0.13;
-    pointer-events: none;
-    animation: floatUp 8s linear infinite;
-    z-index: 0;
-  }
-  @keyframes floatUp {
-    0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-    10%  { opacity: 0.13; }
-    90%  { opacity: 0.13; }
-    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-  }
+/* ── QUIZ ── */
+#quiz{max-width:660px;margin:0 auto;padding:1.4rem 1rem 4rem;}
+.topbar{display:flex;align-items:center;gap:.8rem;background:var(--card);border-radius:16px;padding:.75rem 1.1rem;box-shadow:0 4px 16px rgba(0,0,0,.07);margin-bottom:1.1rem;}
+.tb-name{font-family:'Fredoka One',cursive;color:var(--orange);font-size:1rem;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis;}
+.tb-prog{flex:1;}
+.tb-prog-txt{font-size:.72rem;font-weight:800;color:var(--muted);margin-bottom:3px;text-align:right;}
+.pbar{height:9px;background:#E2E8F0;border-radius:999px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .45s ease;width:0%;}
+.tb-score{background:var(--yellow);color:#78350F;font-family:'Fredoka One',cursive;font-size:.95rem;padding:.3rem .75rem;border-radius:999px;white-space:nowrap;}
+.sec-chip{display:inline-block;padding:.28rem .9rem;border-radius:999px;font-weight:800;font-size:.72rem;color:#fff;text-transform:uppercase;letter-spacing:.6px;margin-bottom:.7rem;}
+.sc1{background:var(--green);}.sc2{background:var(--blue);}.sc3{background:var(--indigo);}.sc4{background:var(--pink);}
+.q-card{background:var(--card);border-radius:var(--radius);padding:1.7rem 1.5rem;box-shadow:var(--shadow);border-left:5px solid var(--blue);animation:cardIn .32s ease;}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.q-num{font-size:.72rem;font-weight:800;color:#CBD5E1;text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem;}
+.q-text{font-size:1.08rem;font-weight:700;line-height:1.6;color:var(--text);margin-bottom:1.2rem;}
 
-  /* === SCREEN SYSTEM === */
-  .screen { display: none; position: relative; z-index: 1; }
-  .screen.active { display: block; }
+/* Demo box */
+.demo-box{background:#F0F4FF;border:2px solid #C7D2FE;border-radius:14px;padding:1rem 1.2rem;margin-bottom:1.2rem;}
+.demo-instruction{font-size:.88rem;font-weight:700;color:var(--indigo);margin-bottom:.7rem;}
+.demo-sentence{font-size:1.1rem;font-weight:800;line-height:1.9;color:var(--text);margin-bottom:.5rem;}
+.blank-slot{display:inline-block;background:#fff;border:2.5px solid var(--indigo);border-radius:8px;padding:.1rem .8rem;min-width:60px;color:var(--indigo);font-weight:900;text-align:center;}
+.context-note{font-size:.78rem;font-weight:700;color:var(--muted);font-style:italic;border-top:1px solid #E0E7FF;padding-top:.5rem;margin-top:.5rem;}
 
-  /* === WELCOME SCREEN === */
-  #welcome {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    text-align: center;
-  }
-  .hero-box {
-    background: var(--card);
-    border-radius: 32px;
-    padding: 3rem 2.5rem;
-    max-width: 520px;
-    width: 100%;
-    box-shadow: var(--shadow);
-    border: 4px solid var(--yellow);
-    position: relative;
-    overflow: hidden;
-  }
-  .hero-box::before {
-    content: '';
-    position: absolute;
-    top: -40px; right: -40px;
-    width: 160px; height: 160px;
-    background: var(--yellow);
-    border-radius: 50%;
-    opacity: 0.18;
-  }
-  .hero-mascot { font-size: 5rem; margin-bottom: 0.5rem; animation: bounce 1.5s ease-in-out infinite; }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }
+/* Options */
+.options{display:flex;flex-direction:column;gap:.55rem;}
+.opt-btn{display:flex;align-items:center;gap:10px;background:#F8FAFC;border:2.5px solid #E2E8F0;border-radius:13px;padding:.7rem 1rem;font-size:.98rem;font-family:'Nunito',sans-serif;font-weight:700;color:var(--text);cursor:pointer;text-align:left;transition:all .16s;}
+.opt-btn:hover:not(:disabled){border-color:var(--blue);background:#EFF6FF;transform:translateX(4px);}
+.opt-ltr{width:26px;height:26px;border-radius:50%;background:#E2E8F0;font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .16s,color .16s;}
+.opt-btn.correct{background:#F0FDF4;border-color:var(--green);}
+.opt-btn.correct .opt-ltr{background:var(--green);color:#fff;}
+.opt-btn.wrong{background:#FFF1F2;border-color:var(--red);}
+.opt-btn.wrong .opt-ltr{background:var(--red);color:#fff;}
 
-  .hero-box h1 {
-    font-family: 'Baloo 2', cursive;
-    font-size: 2.4rem;
-    font-weight: 800;
-    color: var(--orange);
-    line-height: 1.1;
-    margin-bottom: 0.4rem;
-  }
-  .hero-box .subtitle {
-    font-size: 1.05rem;
-    color: #555;
-    margin-bottom: 1.5rem;
-  }
-  .badge-row {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 1.8rem;
-  }
-  .badge {
-    padding: 0.35rem 0.9rem;
-    border-radius: 999px;
-    font-weight: 700;
-    font-size: 0.82rem;
-    color: #fff;
-  }
-  .badge.vocab  { background: var(--purple); }
-  .badge.plural { background: var(--blue);   }
-  .badge.tense  { background: var(--green);  }
+/* Rearrange */
+.rr-label{font-size:.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem;}
+.sent-drop{display:flex;flex-wrap:wrap;gap:7px;min-height:50px;padding:.6rem;background:#EFF6FF;border:2px dashed var(--blue);border-radius:13px;margin-bottom:.7rem;}
+.sent-drop .ph{color:#94A3B8;font-size:.84rem;font-weight:700;align-self:center;width:100%;text-align:center;}
+.word-pool{display:flex;flex-wrap:wrap;gap:7px;padding:.6rem;background:#FAF5FF;border:2px dashed var(--indigo);border-radius:13px;min-height:50px;}
+.tile{background:#fff;border:2px solid var(--indigo);border-radius:9px;padding:.35rem .75rem;font-size:.9rem;font-weight:800;color:var(--indigo);cursor:pointer;transition:transform .12s,background .12s;user-select:none;}
+.tile:hover{transform:scale(1.07);background:var(--indigo);color:#fff;}
+.tile.placed{border-color:var(--blue);color:var(--blue);}
+.tile.placed:hover{background:var(--blue);color:#fff;}
 
-  .name-input {
-    width: 100%;
-    padding: 0.8rem 1.2rem;
-    border: 3px solid var(--yellow);
-    border-radius: 16px;
-    font-size: 1.05rem;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 700;
-    outline: none;
-    margin-bottom: 1.2rem;
-    transition: border-color 0.2s;
-  }
-  .name-input:focus { border-color: var(--orange); }
+/* Feedback */
+.fb{margin-top:.75rem;padding:.7rem 1rem;border-radius:12px;font-size:.9rem;font-weight:700;display:none;line-height:1.5;}
+.fb.show{display:block;animation:pop .22s ease;}
+@keyframes pop{0%{transform:scale(.85)}100%{transform:scale(1)}}
+.fb.ok{background:#F0FDF4;color:#166534;border-left:4px solid var(--green);}
+.fb.no{background:#FFF1F2;color:#991B1B;border-left:4px solid var(--red);}
 
-  .btn-start {
-    background: linear-gradient(135deg, var(--orange), var(--pink));
-    color: #fff;
-    border: none;
-    padding: 1rem 2.5rem;
-    border-radius: 999px;
-    font-size: 1.2rem;
-    font-family: 'Baloo 2', cursive;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(255,112,67,0.4);
-    transition: transform 0.15s, box-shadow 0.15s;
-    letter-spacing: 0.5px;
-  }
-  .btn-start:hover { transform: scale(1.06); box-shadow: 0 10px 28px rgba(255,112,67,0.5); }
+/* Nav */
+.nav{display:flex;justify-content:flex-end;gap:.6rem;margin-top:.9rem;}
+.btn-check,.btn-next{padding:.7rem 1.6rem;border-radius:999px;border:none;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;transition:transform .14s,box-shadow .14s;letter-spacing:.3px;}
+.btn-check{background:linear-gradient(135deg,var(--blue),var(--indigo));color:#fff;box-shadow:0 4px 16px rgba(59,130,246,.32);}
+.btn-check:hover{transform:scale(1.04);}
+.btn-next{background:linear-gradient(135deg,var(--green),#06B6D4);color:#fff;box-shadow:0 4px 16px rgba(34,197,94,.32);display:none;}
+.btn-next:hover{transform:scale(1.04);}
 
-  .info-strip {
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-    color: #888;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  .info-strip span { display: flex; align-items: center; gap: 4px; }
+/* ── RESULT ── */
+#result{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2rem 1rem;}
+.result-card{background:var(--card);border-radius:28px;padding:2.4rem 2rem;max-width:520px;width:100%;box-shadow:var(--shadow);border-top:6px solid var(--green);animation:slideUp .5s ease;margin-bottom:1.2rem;}
+.score-ring{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto .8rem;box-shadow:0 8px 28px rgba(34,197,94,.3);animation:pulse 2.2s ease-in-out infinite;}
+.score-big{font-family:'Fredoka One',cursive;font-size:2.4rem;color:#fff;line-height:1;}
+.score-of{font-size:.82rem;color:rgba(255,255,255,.85);font-weight:800;}
+.result-title{font-family:'Fredoka One',cursive;font-size:1.7rem;color:var(--text);text-align:center;margin-bottom:.3rem;}
+.result-msg{font-size:.95rem;color:var(--muted);font-weight:600;text-align:center;margin-bottom:1.3rem;}
+.sec-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-bottom:1.4rem;}
+.sec-item{background:#F8FAFC;border-radius:12px;padding:.55rem .8rem;display:flex;justify-content:space-between;align-items:center;font-size:.83rem;font-weight:700;color:var(--text);}
+.sec-bar{width:5px;height:34px;border-radius:3px;flex-shrink:0;}
+.sec-left{display:flex;align-items:center;gap:8px;}
+.sec-num{font-family:'Fredoka One',cursive;font-size:1.05rem;}
+.btn-retry{width:100%;padding:.9rem;background:linear-gradient(135deg,var(--orange),var(--pink));color:#fff;border:none;border-radius:14px;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer;box-shadow:0 6px 20px rgba(249,115,22,.36);transition:transform .15s;}
+.btn-retry:hover{transform:translateY(-2px);}
 
-  /* === QUIZ SCREEN === */
-  #quiz {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem 4rem;
-  }
+/* ── RANKING ── */
+.rank-card{background:var(--card);border-radius:28px;padding:2rem 1.8rem;max-width:520px;width:100%;box-shadow:var(--shadow);border-top:6px solid var(--yellow);animation:slideUp .7s ease;}
+.rank-card h3{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--text);margin-bottom:.25rem;}
+.rank-sub{font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:1.2rem;}
+.rank-table{width:100%;border-collapse:collapse;}
+.rank-table th{text-align:left;font-size:.7rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:0 .6rem .6rem;border-bottom:2px solid #F1F5F9;}
+.rank-table td{padding:.6rem;font-size:.88rem;font-weight:700;border-bottom:1px solid #F1F5F9;color:var(--text);}
+.rank-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:.82rem;color:#fff;}
+.rn1{background:linear-gradient(135deg,#F59E0B,#FBBF24);}
+.rn2{background:linear-gradient(135deg,#9CA3AF,#D1D5DB);color:#374151!important;}
+.rn3{background:linear-gradient(135deg,#CD7C2F,#D97706);}
+.rno{background:#E2E8F0;color:var(--muted)!important;}
+.row-you{background:#EFF6FF!important;}
+.row-you td{color:var(--blue)!important;}
+.sp{display:inline-block;padding:.18rem .55rem;border-radius:999px;font-family:'Fredoka One',cursive;font-size:.82rem;}
+.sp-hi{background:#DCFCE7;color:#166534;}.sp-mi{background:#FEF9C3;color:#854D0E;}.sp-lo{background:#FEE2E2;color:#991B1B;}
+.rk-date{font-size:.72rem;color:#94A3B8;font-weight:600;}
+.rk-msg{text-align:center;padding:1.5rem;color:var(--muted);font-size:.85rem;font-weight:600;}
 
-  /* Header bar */
-  .quiz-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.2rem;
-    background: var(--card);
-    border-radius: 20px;
-    padding: 0.8rem 1.2rem;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    gap: 1rem;
-  }
-  .player-name {
-    font-family: 'Baloo 2', cursive;
-    font-weight: 700;
-    color: var(--orange);
-    font-size: 1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 130px;
-  }
-  .progress-wrap { flex: 1; }
-  .progress-label {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #888;
-    margin-bottom: 3px;
-    text-align: right;
-  }
-  .progress-bar {
-    height: 10px;
-    background: #eee;
-    border-radius: 999px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, var(--green), var(--yellow));
-    transition: width 0.4s ease;
-    width: 0%;
-  }
-  .score-badge {
-    background: var(--yellow);
-    color: var(--text);
-    font-weight: 800;
-    font-size: 0.9rem;
-    padding: 0.35rem 0.8rem;
-    border-radius: 999px;
-    white-space: nowrap;
-    font-family: 'Baloo 2', cursive;
-  }
+/* Sparkle */
+.spark{position:fixed;font-size:1.3rem;pointer-events:none;z-index:999;animation:sparkFall 2.8s ease forwards;}
+@keyframes sparkFall{0%{opacity:1;transform:translateY(-10px) rotate(0deg);}100%{opacity:0;transform:translateY(90vh) rotate(480deg);}}
 
-  /* Section label */
-  .section-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0.3rem 1rem;
-    border-radius: 999px;
-    font-weight: 800;
-    font-size: 0.82rem;
-    color: #fff;
-    margin-bottom: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .sec-verb    { background: var(--green); }
-  .sec-mc      { background: var(--blue); }
-  .sec-fill    { background: var(--purple); }
-  .sec-rearr   { background: var(--pink); }
-
-  /* Question card */
-  .question-card {
-    background: var(--card);
-    border-radius: 24px;
-    padding: 1.8rem 1.6rem;
-    box-shadow: var(--shadow);
-    border-top: 6px solid var(--green);
-    animation: slideIn 0.35s ease;
-    margin-bottom: 1rem;
-  }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .q-num {
-    font-size: 0.82rem;
-    font-weight: 800;
-    color: #bbb;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .q-text {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.55;
-    margin-bottom: 1.3rem;
-  }
-  .q-text .blank {
-    display: inline-block;
-    border-bottom: 3px solid var(--orange);
-    min-width: 80px;
-    text-align: center;
-    color: var(--orange);
-    font-weight: 800;
-  }
-
-  /* Story box for fill-in */
-  .story-box {
-    background: #FFF3E0;
-    border-left: 5px solid var(--orange);
-    border-radius: 12px;
-    padding: 1rem 1.2rem;
-    font-size: 1.05rem;
-    line-height: 1.9;
-    margin-bottom: 1.3rem;
-    color: var(--text);
-  }
-
-  /* Options */
-  .options { display: flex; flex-direction: column; gap: 0.65rem; }
-  .option-btn {
-    background: #F7F7F7;
-    border: 2.5px solid #E0E0E0;
-    border-radius: 14px;
-    padding: 0.75rem 1.1rem;
-    font-size: 1rem;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 700;
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.18s;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .option-btn:hover:not(:disabled) { border-color: var(--blue); background: #E3F2FD; transform: translateX(4px); }
-  .option-btn.correct { background: #E8F5E9; border-color: var(--green); color: #1B5E20; }
-  .option-btn.wrong   { background: #FFEBEE; border-color: #E53935; color: #B71C1C; }
-  .option-letter {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: #E0E0E0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.82rem;
-    font-weight: 800;
-    flex-shrink: 0;
-    transition: background 0.18s;
-  }
-  .option-btn.correct .option-letter { background: var(--green); color: #fff; }
-  .option-btn.wrong   .option-letter { background: #E53935;      color: #fff; }
-
-  /* Text input style */
-  .ans-input {
-    width: 100%;
-    padding: 0.8rem 1.1rem;
-    border: 3px solid #E0E0E0;
-    border-radius: 14px;
-    font-size: 1.05rem;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 700;
-    outline: none;
-    transition: border-color 0.2s;
-    background: #F7F7F7;
-  }
-  .ans-input:focus { border-color: var(--blue); background: #fff; }
-  .ans-input.correct { border-color: var(--green); background: #E8F5E9; color: #1B5E20; }
-  .ans-input.wrong   { border-color: #E53935;      background: #FFEBEE; color: #B71C1C; }
-
-  /* Rearrange drag tiles */
-  .word-pool, .sentence-drop {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    min-height: 52px;
-    padding: 0.7rem;
-    border-radius: 14px;
-    margin-bottom: 0.8rem;
-  }
-  .word-pool {
-    background: #F3E5F5;
-    border: 2.5px dashed var(--purple);
-  }
-  .sentence-drop {
-    background: #E8EAF6;
-    border: 2.5px dashed var(--blue);
-  }
-  .sentence-drop .drop-label {
-    color: #aaa; font-size: 0.9rem; font-weight: 700;
-    align-self: center;
-    width: 100%;
-    text-align: center;
-    pointer-events: none;
-  }
-  .word-tile {
-    background: #fff;
-    border: 2.5px solid var(--purple);
-    color: var(--purple);
-    border-radius: 10px;
-    padding: 0.4rem 0.8rem;
-    font-size: 0.95rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: transform 0.12s, background 0.12s;
-    user-select: none;
-  }
-  .word-tile:hover { transform: scale(1.08); background: var(--purple); color: #fff; }
-  .word-tile.in-sentence { border-color: var(--blue); color: var(--blue); }
-  .word-tile.in-sentence:hover { background: var(--blue); color: #fff; }
-
-  /* Feedback */
-  .feedback {
-    margin-top: 0.8rem;
-    padding: 0.7rem 1rem;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    display: none;
-  }
-  .feedback.show { display: block; animation: pop 0.25s ease; }
-  @keyframes pop { 0%{transform:scale(0.8)} 100%{transform:scale(1)} }
-  .feedback.correct { background: #E8F5E9; color: #2E7D32; }
-  .feedback.wrong   { background: #FFEBEE; color: #C62828; }
-
-  /* Nav buttons */
-  .nav-row {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.7rem;
-    margin-top: 1rem;
-  }
-  .btn-check, .btn-next {
-    padding: 0.75rem 1.8rem;
-    border-radius: 999px;
-    border: none;
-    font-family: 'Baloo 2', cursive;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
-  .btn-check {
-    background: linear-gradient(135deg, var(--blue), var(--purple));
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(33,150,243,0.35);
-  }
-  .btn-check:hover { transform: scale(1.05); }
-  .btn-next {
-    background: linear-gradient(135deg, var(--green), #00BCD4);
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(45,198,83,0.35);
-    display: none;
-  }
-  .btn-next:hover { transform: scale(1.05); }
-
-  /* === RESULT SCREEN === */
-  #result {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
-  .result-card {
-    background: var(--card);
-    border-radius: 32px;
-    padding: 2.5rem 2rem;
-    max-width: 520px;
-    width: 100%;
-    box-shadow: var(--shadow);
-    text-align: center;
-    border: 4px solid var(--green);
-    animation: slideIn 0.5s ease;
-  }
-  .result-emoji { font-size: 5rem; margin-bottom: 0.5rem; animation: bounce 1.5s ease-in-out infinite; }
-  .result-card h2 {
-    font-family: 'Baloo 2', cursive;
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--orange);
-    margin-bottom: 0.4rem;
-  }
-  .score-circle {
-    width: 130px; height: 130px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--green), var(--yellow));
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 1rem auto;
-    box-shadow: 0 8px 24px rgba(45,198,83,0.35);
-  }
-  .score-num {
-    font-family: 'Baloo 2', cursive;
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #fff;
-    line-height: 1;
-  }
-  .score-total { font-size: 0.9rem; color: rgba(255,255,255,0.85); font-weight: 700; }
-  .grade-msg { font-size: 1.1rem; color: #555; margin-bottom: 1.5rem; font-weight: 600; }
-
-  .section-scores {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem;
-    margin-bottom: 1.5rem;
-  }
-  .sec-score-item {
-    background: #F5F5F5;
-    border-radius: 12px;
-    padding: 0.6rem 0.8rem;
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: var(--text);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .sec-score-item .dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 6px;
-  }
-
-  .btn-retry {
-    background: linear-gradient(135deg, var(--orange), var(--pink));
-    color: #fff;
-    border: none;
-    padding: 0.9rem 2.2rem;
-    border-radius: 999px;
-    font-size: 1.1rem;
-    font-family: 'Baloo 2', cursive;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(255,112,67,0.4);
-    transition: transform 0.15s;
-  }
-  .btn-retry:hover { transform: scale(1.06); }
-
-  /* Celebration particles */
-  .particle {
-    position: fixed;
-    font-size: 1.5rem;
-    pointer-events: none;
-    z-index: 999;
-    animation: fall 3s ease forwards;
-  }
-  @keyframes fall {
-    0%   { opacity: 1; transform: translateY(-20px) rotate(0deg); }
-    100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
-  }
-
-  @media (max-width: 480px) {
-    .hero-box h1 { font-size: 1.9rem; }
-    .q-text { font-size: 1rem; }
-    .quiz-header { flex-wrap: wrap; }
-    .section-scores { grid-template-columns: 1fr; }
-  }
+@media(max-width:480px){
+  .hero-card h1{font-size:1.8rem;}
+  .sec-breakdown{grid-template-columns:1fr;}
+  .topbar{flex-wrap:wrap;}
+}
 </style>
 </head>
 <body>
+<div class="blob-bg">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+</div>
 
-<!-- Floating background emojis -->
-<div class="floating-emoji" style="left:5%;animation-delay:0s;animation-duration:9s">📚</div>
-<div class="floating-emoji" style="left:20%;animation-delay:2s;animation-duration:11s">✏️</div>
-<div class="floating-emoji" style="left:40%;animation-delay:4s;animation-duration:8s">🌟</div>
-<div class="floating-emoji" style="left:60%;animation-delay:1s;animation-duration:10s">🎯</div>
-<div class="floating-emoji" style="left:80%;animation-delay:3s;animation-duration:12s">🏆</div>
-<div class="floating-emoji" style="left:92%;animation-delay:5s;animation-duration:9s">🎉</div>
-
-<!-- =========  WELCOME SCREEN  ========= -->
+<!-- WELCOME -->
 <div id="welcome" class="screen active">
-  <div class="hero-box">
-    <div class="hero-mascot">🦁</div>
-    <h1>English Quest!</h1>
-    <p class="subtitle">Yuk, uji kemampuan bahasa Inggris kamu! 🎮</p>
-    <div class="badge-row">
-      <span class="badge vocab">📖 Vocabulary</span>
-      <span class="badge plural">🔢 Singular &amp; Plural</span>
-      <span class="badge tense">⏰ Simple Present</span>
+  <div class="hero-card">
+    <div class="hero-icon">&#9998;</div>
+    <h1>English <span>Quest</span></h1>
+    <p class="hero-sub">Uji kemampuan Bahasa Inggris kamu sekarang!</p>
+    <div class="pill-row">
+      <span class="pill p1">Vocabulary</span>
+      <span class="pill p2">Singular &amp; Plural</span>
+      <span class="pill p3">Demonstrative</span>
+      <span class="pill p4">Simple Present</span>
     </div>
-    <input class="name-input" type="text" id="playerName" placeholder="Tulis nama kamu di sini... 😊" maxlength="30">
-    <br>
-    <button class="btn-start" onclick="startQuiz()">Mulai Sekarang! 🚀</button>
-    <div class="info-strip">
-      <span>🎯 20 Soal</span>
-      <span>⭐ 4 Bagian</span>
-      <span>🏆 Raih Nilai Tertinggi!</span>
+    <input class="name-input" id="playerName" type="text" placeholder="Tulis nama lengkap kamu..." maxlength="30" autocomplete="off">
+    <button class="btn-start" onclick="startQuiz()">Mulai Quiz</button>
+    <div class="info-row">
+      <span><span class="idot" style="background:var(--blue)"></span>20 Soal</span>
+      <span><span class="idot" style="background:var(--green)"></span>4 Bagian</span>
+      <span><span class="idot" style="background:var(--orange)"></span>Global Ranking</span>
     </div>
   </div>
 </div>
 
-<!-- =========  QUIZ SCREEN  ========= -->
+<!-- QUIZ -->
 <div id="quiz" class="screen">
-  <div class="quiz-header">
-    <div class="player-name" id="displayName">Player</div>
-    <div class="progress-wrap">
-      <div class="progress-label" id="progressLabel">1 / 20</div>
-      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="topbar">
+    <div class="tb-name" id="displayName">Player</div>
+    <div class="tb-prog">
+      <div class="tb-prog-txt" id="progressTxt">1 / 20</div>
+      <div class="pbar"><div class="pbar-fill" id="pbarFill"></div></div>
     </div>
-    <div class="score-badge">⭐ <span id="liveScore">0</span></div>
+    <div class="tb-score">Score: <span id="liveScore">0</span></div>
   </div>
-
-  <div id="sectionLabel" class="section-label sec-verb">🔤 Section 1</div>
-
-  <div class="question-card" id="questionCard">
-    <div class="q-num" id="qNum">Question 1</div>
+  <div id="secChip" class="sec-chip sc1">Section 1</div>
+  <div class="q-card" id="qCard">
+    <div class="q-num" id="qNum">Soal 1 dari 20</div>
     <div class="q-text" id="qText"></div>
-    <div id="storyBox" class="story-box" style="display:none"></div>
-    <div id="answerArea"></div>
-    <div class="feedback" id="feedback"></div>
-    <div class="nav-row">
-      <button class="btn-check" id="btnCheck" onclick="checkAnswer()">Check ✔️</button>
-      <button class="btn-next"  id="btnNext"  onclick="nextQuestion()">Next ➡️</button>
+    <div id="demoBox" class="demo-box" style="display:none"></div>
+    <div id="ansArea"></div>
+    <div class="fb" id="fb"></div>
+    <div class="nav">
+      <button class="btn-check" id="btnCheck" onclick="checkAnswer()">Periksa</button>
+      <button class="btn-next"  id="btnNext"  onclick="nextQuestion()">Lanjut &rarr;</button>
     </div>
   </div>
 </div>
 
-<!-- =========  RESULT SCREEN  ========= -->
+<!-- RESULT -->
 <div id="result" class="screen">
   <div class="result-card">
-    <div class="result-emoji" id="resultEmoji">🏆</div>
-    <h2 id="resultTitle">Luar Biasa!</h2>
-    <div class="score-circle">
-      <div class="score-num" id="finalScore">0</div>
-      <div class="score-total">dari 20</div>
+    <div class="score-ring">
+      <div class="score-big" id="finalScore">0</div>
+      <div class="score-of">dari 20</div>
     </div>
-    <p class="grade-msg" id="gradeMsg"></p>
-    <div class="section-scores" id="sectionScores"></div>
-    <button class="btn-retry" onclick="retryQuiz()">🔄 Coba Lagi!</button>
+    <div class="result-title" id="resultTitle">Selesai!</div>
+    <div class="result-msg" id="resultMsg"></div>
+    <div class="sec-breakdown" id="secBreakdown"></div>
+    <button class="btn-retry" onclick="retryQuiz()">Coba Lagi</button>
+  </div>
+  <div class="rank-card">
+    <h3>Papan Peringkat</h3>
+    <p class="rank-sub">Hasil semua peserta yang sudah mengikuti quiz ini.</p>
+    <div id="rankContent"><div class="rk-msg">Memuat peringkat...</div></div>
   </div>
 </div>
 
 <script>
-// ==============================
-// QUESTIONS DATA
-// ==============================
-const questions = [
+/* ─── QUESTIONS ─── */
+const Qs=[
+  /* SECTION 1 – Verb s/es */
+  {sec:1,type:'mc2',text:'Budi ___ to school every day.',opts:['go','goes'],ans:'goes',
+   tip:'Subjek "Budi" = he/she/it, jadi verb + <b>s</b> → <b>goes</b>.'},
+  {sec:1,type:'mc2',text:'The children ___ in the yard after school.',opts:['play','plays'],ans:'play',
+   tip:'"The children" adalah plural (jamak), jadi pakai verb biasa → <b>play</b>.'},
+  {sec:1,type:'mc2',text:'My mother ___ rice every morning.',opts:['cook','cooks'],ans:'cooks',
+   tip:'"My mother" = she, jadi verb + <b>s</b> → <b>cooks</b>.'},
+  {sec:1,type:'mc2',text:'The birds ___ beautifully in the tree.',opts:['sing','sings'],ans:'sing',
+   tip:'"The birds" adalah plural, jadi pakai verb biasa → <b>sing</b>.'},
+  {sec:1,type:'mc2',text:'Rini ___ the bus to get to school.',opts:['catch','catches'],ans:'catches',
+   tip:'"Rini" = she. Verb berakhiran -ch → tambah <b>-es</b> → <b>catches</b>.'},
 
-  // --- SECTION 1: Right Verb (s/es) --- Q1–5
-  {
-    section: 1,
-    type: 'verb',
-    text: 'Budi ___ to school every day.',
-    options: ['go', 'goes'],
-    answer: 'goes',
-    tip: 'Karena subjeknya "Budi" (he/she/it), kita pakai verb + <b>s</b> → <b>goes</b>!'
-  },
-  {
-    section: 1,
-    type: 'verb',
-    text: 'The children ___ in the yard after school.',
-    options: ['play', 'plays'],
-    answer: 'play',
-    tip: '"The children" adalah plural (lebih dari satu), jadi pakai verb biasa → <b>play</b>!'
-  },
-  {
-    section: 1,
-    type: 'verb',
-    text: 'My mother ___ rice every morning.',
-    options: ['cook', 'cooks'],
-    answer: 'cooks',
-    tip: '"My mother" = she, jadi verb + <b>s</b> → <b>cooks</b>!'
-  },
-  {
-    section: 1,
-    type: 'verb',
-    text: 'The birds ___ beautifully in the tree.',
-    options: ['sing', 'sings'],
-    answer: 'sing',
-    tip: '"The birds" adalah plural, pakai verb biasa → <b>sing</b>!'
-  },
-  {
-    section: 1,
-    type: 'verb',
-    text: 'Rini ___ the bus to get to her school.',
-    options: ['catch', 'catches'],
-    answer: 'catches',
-    tip: '"Rini" = she. Verb berakhiran -ch, jadi tambahkan <b>-es</b> → <b>catches</b>!'
-  },
+  /* SECTION 2 – Multiple Choice */
+  {sec:2,type:'mc4',text:'What is the correct plural form of the word "box"?',
+   opts:['boxs','boxies','boxes','boxxes'],ans:'boxes',
+   tip:'Kata benda berakhiran -x → tambah <b>-es</b> → <b>boxes</b>.'},
+  {sec:2,type:'mc4',text:'Choose the correct negative sentence in Simple Present Tense!',
+   opts:["She don't like vegetables.","She doesn't likes vegetables.","She doesn't like vegetables.","She not like vegetables."],
+   ans:"She doesn't like vegetables.",
+   tip:'He/She/It + <b>doesn\'t</b> + verb biasa → "She <b>doesn\'t like</b> vegetables."'},
+  {sec:2,type:'mc4',text:'What is the singular form of the word "teeth"?',
+   opts:['tooths','teeths','teethe','tooth'],ans:'tooth',
+   tip:'"Teeth" adalah bentuk plural tidak beraturan. Singularnya → <b>tooth</b>.'},
+  {sec:2,type:'mc4',text:'Which sentence uses Simple Present Tense correctly?',
+   opts:['He play football yesterday.','She is go to market now.','They watches TV every evening.','My father reads a newspaper every morning.'],
+   ans:'My father reads a newspaper every morning.',
+   tip:'"My father" = he, jadi <b>reads</b> (verb + s) sudah benar untuk Simple Present.'},
+  {sec:2,type:'mc4',text:'What is the plural form of the word "child"?',
+   opts:['childs','childes','children','childer'],ans:'children',
+   tip:'"Child" punya bentuk plural tidak beraturan (irregular) → <b>children</b>.'},
 
-  // --- SECTION 2: Multiple Choice --- Q6–10
-  {
-    section: 2,
-    type: 'mc',
-    text: 'What is the plural form of "child"?',
-    choices: ['childs', 'childes', 'children', 'childer'],
-    answer: 'children',
-    tip: '"Child" punya bentuk plural yang tidak beraturan → <b>children</b>!'
-  },
-  {
-    section: 2,
-    type: 'mc',
-    text: 'Choose the correct sentence!',
-    choices: [
-      'She don\'t like vegetables.',
-      'She doesn\'t likes vegetables.',
-      'She doesn\'t like vegetables.',
-      'She not like vegetables.'
-    ],
-    answer: 'She doesn\'t like vegetables.',
-    tip: 'Kalimat negatif he/she/it pakai <b>doesn\'t + verb biasa</b> → doesn\'t like!'
-  },
-  {
-    section: 2,
-    type: 'mc',
-    text: 'What is the meaning of "market" in Bahasa Indonesia?',
-    choices: ['Toko', 'Pasar', 'Warung', 'Kantin'],
-    answer: 'Pasar',
-    tip: '"Market" artinya <b>Pasar</b> — tempat jual beli!'
-  },
-  {
-    section: 2,
-    type: 'mc',
-    text: 'Which word is an antonym (lawan kata) of "cheap"?',
-    choices: ['Small', 'Expensive', 'Beautiful', 'Fast'],
-    answer: 'Expensive',
-    tip: 'Lawan kata "cheap" (murah) adalah <b>expensive</b> (mahal)!'
-  },
-  {
-    section: 2,
-    type: 'mc',
-    text: 'What is the plural form of "tooth"?',
-    choices: ['tooths', 'teeths', 'teeth', 'toothes'],
-    answer: 'teeth',
-    tip: '"Tooth" punya bentuk plural yang tidak beraturan → <b>teeth</b>!'
-  },
+  /* SECTION 3 – Demonstrative Determiners */
+  {sec:3,type:'demo',
+   instruction:'Tentukan <b>demonstrative determiner</b> yang tepat!',
+   sentence:'(<span class="blank-slot">___</span>) pencil in my hand is very sharp.',
+   context:'Pensil ada di tangan kamu saat ini — satu benda.',
+   opts:['This','That','These','Those'],ans:'This',
+   tip:'"Di tangan kamu sekarang" → dekat + satu benda → <b>This</b>.'},
+  {sec:3,type:'demo',
+   instruction:'Tentukan <b>demonstrative determiner</b> yang tepat!',
+   sentence:'Look at (<span class="blank-slot">___</span>) mountains far away. They look beautiful!',
+   context:'Kamu melihat pegunungan dari kejauhan — lebih dari satu.',
+   opts:['This','That','These','Those'],ans:'Those',
+   tip:'"Dari kejauhan" → jauh + lebih dari satu → <b>Those</b>.'},
+  {sec:3,type:'demo',
+   instruction:'Tentukan <b>demonstrative determiner</b> yang tepat!',
+   sentence:'(<span class="blank-slot">___</span>) bag on the chair over there belongs to Siti.',
+   context:'Tasnya berada di kursi yang letaknya agak jauh dari kamu — satu benda.',
+   opts:['This','That','These','Those'],ans:'That',
+   tip:'"Kursi yang agak jauh" → jauh + satu benda → <b>That</b>.'},
+  {sec:3,type:'demo',
+   instruction:'Tentukan <b>demonstrative determiner</b> yang tepat!',
+   sentence:'(<span class="blank-slot">___</span>) mangoes on the plate in front of me look fresh.',
+   context:'Mangga ada di piring tepat di depan kamu — lebih dari satu.',
+   opts:['This','That','These','Those'],ans:'These',
+   tip:'"Di depan kamu sekarang" → dekat + lebih dari satu → <b>These</b>.'},
+  {sec:3,type:'demo',
+   instruction:'Tentukan <b>demonstrative determiner</b> yang tepat!',
+   sentence:'Excuse me, what is (<span class="blank-slot">___</span>) tall building two blocks away?',
+   context:'Gedung berada dua blok jauh dari tempatmu berdiri — satu benda.',
+   opts:['This','That','These','Those'],ans:'That',
+   tip:'"Dua blok jauh" → jauh + satu benda → <b>That</b>.'},
 
-  // --- SECTION 3: Fill in the Blank (Story) --- Q11–15
-  {
-    section: 3,
-    type: 'fill',
-    story: 'Every Sunday, Sari and her family <span class="blank">___</span> to Pasar Baru. Her mother always buys fresh vegetables and fruits. Sari loves to eat <i>rujak</i>, a traditional Indonesian fruit salad.',
-    blankIndex: 0,
-    text: 'Fill in the blank with the correct word:',
-    answer: 'go',
-    hint: 'The subject is "Sari and her family" (they/plural). Which verb is correct: go or goes?',
-    tip: '"Sari and her family" = they (plural), jadi pakai verb biasa → <b>go</b>!'
-  },
-  {
-    section: 3,
-    type: 'fill',
-    story: 'Dimas is a student. He <span class="blank">___</span> at SMP Nusantara. Every morning, he wakes up at 5 AM and helps his mother prepare breakfast.',
-    blankIndex: 0,
-    text: 'Fill in the blank with the correct word:',
-    answer: 'studies',
-    hint: 'The subject is "He". Which verb is correct: study or studies?',
-    tip: '"He" = singular, verb "study" → <b>studies</b> (y berubah jadi ies)!'
-  },
-  {
-    section: 3,
-    type: 'fill',
-    story: 'Indonesia <span class="blank">___</span> more than 17,000 islands. It is the largest archipelago country in the world. People in Indonesia speak many different languages.',
-    blankIndex: 0,
-    text: 'Fill in the blank with the correct word:',
-    answer: 'has',
-    hint: 'The subject is "Indonesia" (it). Which verb is correct: have or has?',
-    tip: '"Indonesia" = it (singular), pakai <b>has</b> bukan have!'
-  },
-  {
-    section: 3,
-    type: 'fill',
-    story: 'My grandfather <span class="blank">___</span> in a small village near a rice field in Java. He grows rice and vegetables every season. The rice field is very beautiful and green.',
-    blankIndex: 0,
-    text: 'Fill in the blank with the correct word:',
-    answer: 'lives',
-    hint: 'The subject is "My grandfather" (he). Which verb is correct: live or lives?',
-    tip: '"My grandfather" = he (singular), verb + s → <b>lives</b>!'
-  },
-  {
-    section: 3,
-    type: 'fill',
-    story: 'Batik is a traditional Indonesian cloth. People all over the world <span class="blank">___</span> batik for its beautiful patterns and colors. Many foreign tourists buy batik when they visit Indonesia.',
-    blankIndex: 0,
-    text: 'Fill in the blank with the correct word:',
-    answer: 'love',
-    hint: 'The subject is "People all over the world" (they/plural). Which verb is correct: love or loves?',
-    tip: '"People all over the world" = they (plural), pakai verb biasa → <b>love</b>!'
-  },
-
-  // --- SECTION 4: HOTS – Rearrange Words --- Q16–20
-  {
-    section: 4,
-    type: 'rearr',
-    text: 'Susun kata-kata ini menjadi kalimat yang benar! 🧩',
-    words: ['every', 'Andi', 'plays', 'soccer', 'Saturday'],
-    answer: 'Andi plays soccer every Saturday',
-    tip: 'Urutan yang benar: Subjek + Verb + Objek + Waktu → <b>Andi plays soccer every Saturday</b>!'
-  },
-  {
-    section: 4,
-    type: 'rearr',
-    text: 'Susun kata-kata ini menjadi kalimat yang benar! 🧩',
-    words: ['not', 'like', 'does', 'Putri', 'spicy food'],
-    answer: 'Putri does not like spicy food',
-    tip: 'Kalimat negatif: Subjek + does not + verb → <b>Putri does not like spicy food</b>!'
-  },
-  {
-    section: 4,
-    type: 'rearr',
-    text: 'Susun kata-kata ini menjadi kalimat yang benar! 🧩',
-    words: ['the', 'sell', 'fresh fish', 'fishermen', 'at the market'],
-    answer: 'the fishermen sell fresh fish at the market',
-    tip: 'Urutan: Subjek + Verb + Objek + Keterangan → <b>the fishermen sell fresh fish at the market</b>!'
-  },
-  {
-    section: 4,
-    type: 'rearr',
-    text: 'Susun kata-kata ini menjadi kalimat yang benar! 🧩',
-    words: ['Indonesian', 'many', 'speak', 'people', 'languages'],
-    answer: 'many Indonesian people speak languages',
-    tip: 'Urutan: Kata sifat/keterangan + Subjek + Verb + Objek → <b>many Indonesian people speak languages</b>!'
-  },
-  {
-    section: 4,
-    type: 'rearr',
-    text: 'Susun kata-kata ini menjadi kalimat yang benar! 🧩',
-    words: ['has', 'my school', 'a big', 'library', 'and', 'a canteen'],
-    answer: 'my school has a big library and a canteen',
-    tip: 'Subjek + Verb + Objek → <b>my school has a big library and a canteen</b>!'
-  }
+  /* SECTION 4 – Rearrange (HOTS) */
+  {sec:4,type:'rearr',text:'Susun kata-kata ini menjadi kalimat yang benar!',
+   words:['every','Andi','plays','football','Sunday'],
+   ans:'Andi plays football every Sunday',
+   tip:'Pola: Subjek + Verb + Objek + Waktu → <b>Andi plays football every Sunday</b>.'},
+  {sec:4,type:'rearr',text:'Susun kata-kata ini menjadi kalimat yang benar!',
+   words:['not','like','does','Putri','spicy food'],
+   ans:'Putri does not like spicy food',
+   tip:'Pola negatif: Subjek + does not + verb → <b>Putri does not like spicy food</b>.'},
+  {sec:4,type:'rearr',text:'Susun kata-kata ini menjadi kalimat yang benar!',
+   words:['she','sells','at school','fruits'],
+   ans:'she sells fruits at school',
+   tip:'Pola: Subjek + Verb + Objek + Tempat → <b>she sells fruits at school</b>.'},
+  {sec:4,type:'rearr',text:'Susun kata-kata ini menjadi kalimat yang benar!',
+   words:['books','every night','I','read'],
+   ans:'I read books every night',
+   tip:'Pola: Subjek + Verb + Objek + Waktu → <b>I read books every night</b>.'},
+  {sec:4,type:'rearr',text:'Susun kata-kata ini menjadi kalimat yang benar!',
+   words:['meat','do','they','not','eat'],
+   ans:'they do not eat meat',
+   tip:'Pola negatif: Subjek (they) + do not + verb → <b>they do not eat meat</b>.'}
 ];
 
-// ==============================
-// STATE
-// ==============================
-let current = 0;
-let score = 0;
-let sectionScores = {1:0, 2:0, 3:0, 4:0};
-let playerName = '';
-let answered = false;
-
-// For rearrange
-let sentenceWords = [];
-let poolWords = [];
-
-const sectionMeta = {
-  1: { label: '🔤 Pilih Verb yang Benar', cls: 'sec-verb',  color: '#2DC653' },
-  2: { label: '📝 Pilihan Ganda',         cls: 'sec-mc',   color: '#2196F3' },
-  3: { label: '📖 Isi Cerita',            cls: 'sec-fill', color: '#9C27B0' },
-  4: { label: '🧩 Susun Kalimat (HOTS)',  cls: 'sec-rearr',color: '#E91E8C' }
+const SMETA={
+  1:{label:'Pilih Verb yang Benar',chip:'sc1',border:'var(--green)'},
+  2:{label:'Pilihan Ganda',       chip:'sc2',border:'var(--blue)'},
+  3:{label:'Demonstrative Determiners',chip:'sc3',border:'var(--indigo)'},
+  4:{label:'Susun Kalimat (HOTS)',chip:'sc4',border:'var(--pink)'}
 };
 
-// ==============================
-// START
-// ==============================
-function startQuiz() {
-  playerName = document.getElementById('playerName').value.trim() || 'Pelajar';
-  document.getElementById('displayName').textContent = '👋 ' + playerName;
-  showScreen('quiz');
-  renderQuestion();
+let cur=0,score=0,secSc={1:0,2:0,3:0,4:0};
+let answered=false,selOpt=null,rearWords=[];
+let playerName='',myEntryTs=0;
+
+function startQuiz(){
+  playerName=(document.getElementById('playerName').value||'').trim()||'Pelajar';
+  document.getElementById('displayName').textContent=playerName;
+  showScreen('quiz');renderQ();
 }
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+function renderQ(){
+  answered=false;selOpt=null;rearWords=[];
+  const q=Qs[cur],sm=SMETA[q.sec];
+  document.getElementById('pbarFill').style.width=(cur/Qs.length*100)+'%';
+  document.getElementById('progressTxt').textContent=(cur+1)+' / '+Qs.length;
+  document.getElementById('liveScore').textContent=score;
+  const chip=document.getElementById('secChip');
+  chip.textContent='Section '+q.sec+' — '+sm.label;
+  chip.className='sec-chip '+sm.chip;
+  document.getElementById('qCard').style.borderLeftColor=sm.border;
+  document.getElementById('qNum').textContent='Soal '+(cur+1)+' dari '+Qs.length;
+  document.getElementById('qText').innerHTML=q.type==='demo'?'':q.text;
 
-// ==============================
-// RENDER QUESTION
-// ==============================
-function renderQuestion() {
-  answered = false;
-  const q = questions[current];
+  const db=document.getElementById('demoBox');
+  if(q.type==='demo'){
+    db.style.display='block';
+    db.innerHTML=
+      '<div class="demo-instruction">'+q.instruction+'</div>'+
+      '<div class="demo-sentence">'+q.sentence+'</div>'+
+      '<div class="context-note">Konteks: '+q.context+'</div>';
+  } else { db.style.display='none'; }
 
-  // Progress
-  const pct = (current / questions.length) * 100;
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressLabel').textContent = (current + 1) + ' / ' + questions.length;
-  document.getElementById('liveScore').textContent = score;
+  const aa=document.getElementById('ansArea');aa.innerHTML='';
 
-  // Section label
-  const sm = sectionMeta[q.section];
-  const sl = document.getElementById('sectionLabel');
-  sl.textContent = sm.label;
-  sl.className = 'section-label ' + sm.cls;
-
-  // Card border color
-  document.getElementById('questionCard').style.borderTopColor = sm.color;
-
-  // Q num & text
-  document.getElementById('qNum').textContent = 'Soal ' + (current + 1) + ' dari ' + questions.length;
-  document.getElementById('qText').textContent = q.text;
-
-  // Story box
-  const sb = document.getElementById('storyBox');
-  if (q.type === 'fill') {
-    sb.style.display = 'block';
-    sb.innerHTML = q.story;
-  } else {
-    sb.style.display = 'none';
+  if(q.type==='mc2'||q.type==='mc4'||q.type==='demo'){
+    const letters=['A','B','C','D'];
+    const wrap=document.createElement('div');wrap.className='options';
+    q.opts.forEach((o,i)=>{
+      const btn=document.createElement('button');
+      btn.className='opt-btn';btn.dataset.v=o;
+      btn.innerHTML=`<span class="opt-ltr">${letters[i]}</span>${o}`;
+      btn.onclick=()=>{if(!answered)pickOpt(btn,o);};
+      wrap.appendChild(btn);
+    });
+    aa.appendChild(wrap);
+  } else if(q.type==='rearr'){
+    const rl=document.createElement('div');rl.className='rr-label';rl.textContent='Kalimat kamu:';
+    const sd=document.createElement('div');sd.className='sent-drop';sd.id='sentDrop';
+    const ph=document.createElement('div');ph.className='ph';ph.textContent='Klik kata di bawah untuk menyusun kalimat...';
+    sd.appendChild(ph);
+    const pl=document.createElement('div');pl.className='rr-label';pl.style.marginTop='.4rem';pl.textContent='Kata-kata tersedia:';
+    const pool=document.createElement('div');pool.className='word-pool';pool.id='wordPool';
+    [...q.words].sort(()=>Math.random()-.5).forEach(w=>pool.appendChild(makeTile(w,pool,sd)));
+    aa.append(rl,sd,pl,pool);
   }
 
-  // Answer area
-  const aa = document.getElementById('answerArea');
-  aa.innerHTML = '';
-
-  if (q.type === 'verb') {
-    // Two big option buttons
-    const div = document.createElement('div');
-    div.className = 'options';
-    ['A','B'].forEach((ltr, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.dataset.val = q.options[i];
-      btn.innerHTML = `<span class="option-letter">${ltr}</span> ${q.options[i]}`;
-      btn.onclick = () => { if (!answered) selectVerb(btn, q.options[i]); };
-      div.appendChild(btn);
-    });
-    aa.appendChild(div);
-
-  } else if (q.type === 'mc') {
-    const div = document.createElement('div');
-    div.className = 'options';
-    ['A','B','C','D'].forEach((ltr, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.dataset.val = q.choices[i];
-      btn.innerHTML = `<span class="option-letter">${ltr}</span> ${q.choices[i]}`;
-      btn.onclick = () => { if (!answered) selectMC(btn, q.choices[i]); };
-      div.appendChild(btn);
-    });
-    aa.appendChild(div);
-
-  } else if (q.type === 'fill') {
-    const inp = document.createElement('input');
-    inp.type = 'text';
-    inp.className = 'ans-input';
-    inp.placeholder = 'Tulis jawaban kamu di sini...';
-    inp.id = 'fillInput';
-    inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !answered) checkAnswer(); });
-    aa.appendChild(inp);
-    setTimeout(() => inp.focus(), 100);
-
-  } else if (q.type === 'rearr') {
-    sentenceWords = [];
-    poolWords = [...q.words];
-
-    const dropLabel = document.createElement('div');
-    dropLabel.className = 'drop-label';
-    dropLabel.textContent = 'Klik kata di bawah untuk menyusun kalimat ⬇️';
-
-    const sentDiv = document.createElement('div');
-    sentDiv.className = 'sentence-drop';
-    sentDiv.id = 'sentDrop';
-    sentDiv.appendChild(dropLabel);
-
-    const poolDiv = document.createElement('div');
-    poolDiv.className = 'word-pool';
-    poolDiv.id = 'wordPool';
-
-    // Shuffle pool
-    const shuffled = [...q.words].sort(() => Math.random() - 0.5);
-    shuffled.forEach(w => {
-      const tile = makeTile(w, poolDiv, sentDiv, false);
-      poolDiv.appendChild(tile);
-    });
-
-    aa.appendChild(sentDiv);
-    aa.appendChild(poolDiv);
-  }
-
-  // Feedback & buttons
-  const fb = document.getElementById('feedback');
-  fb.className = 'feedback';
-  fb.innerHTML = '';
-  document.getElementById('btnCheck').style.display = 'inline-block';
-  document.getElementById('btnNext').style.display = 'none';
+  const fb=document.getElementById('fb');fb.className='fb';fb.innerHTML='';
+  document.getElementById('btnCheck').style.display='inline-block';
+  document.getElementById('btnNext').style.display='none';
 }
 
-function makeTile(word, poolDiv, sentDiv, inSentence) {
-  const tile = document.createElement('div');
-  tile.className = 'word-tile' + (inSentence ? ' in-sentence' : '');
-  tile.textContent = word;
-  tile.onclick = () => {
-    if (answered) return;
-    if (!tile.classList.contains('in-sentence')) {
-      // Move to sentence
-      tile.classList.add('in-sentence');
-      const label = sentDiv.querySelector('.drop-label');
-      if (label) label.remove();
-      sentDiv.appendChild(tile);
-      sentenceWords.push(word);
+function makeTile(word,pool,sent){
+  const t=document.createElement('div');t.className='tile';t.textContent=word;
+  t.onclick=()=>{
+    if(answered)return;
+    if(!t.classList.contains('placed')){
+      t.classList.add('placed');
+      const ph=sent.querySelector('.ph');if(ph)ph.remove();
+      sent.appendChild(t);rearWords.push(word);
     } else {
-      // Move back to pool
-      tile.classList.remove('in-sentence');
-      poolDiv.appendChild(tile);
-      sentenceWords = sentenceWords.filter(w => w !== word);
-      // If need same word multiple times — handle by index is simplified here
-      if (sentDiv.children.length === 0) {
-        const dl = document.createElement('div');
-        dl.className = 'drop-label';
-        dl.textContent = 'Klik kata di bawah untuk menyusun kalimat ⬇️';
-        sentDiv.appendChild(dl);
+      t.classList.remove('placed');pool.appendChild(t);
+      const idx=rearWords.lastIndexOf(word);if(idx>-1)rearWords.splice(idx,1);
+      if(!sent.children.length){
+        const ph=document.createElement('div');ph.className='ph';
+        ph.textContent='Klik kata di bawah untuk menyusun kalimat...';sent.appendChild(ph);
       }
     }
   };
-  return tile;
+  return t;
 }
 
-// ==============================
-// SELECT HANDLERS
-// ==============================
-let selectedVerb = null;
-let selectedMC   = null;
-
-function selectVerb(btn, val) {
-  document.querySelectorAll('.option-btn').forEach(b => b.style.background = '');
-  btn.style.background = '#E3F2FD';
-  btn.style.borderColor = '#2196F3';
-  selectedVerb = val;
+function pickOpt(btn,val){
+  document.querySelectorAll('.opt-btn').forEach(b=>{b.style.background='';b.style.borderColor='';});
+  btn.style.background='#EFF6FF';btn.style.borderColor='var(--blue)';selOpt=val;
 }
 
-function selectMC(btn, val) {
-  document.querySelectorAll('.option-btn').forEach(b => {
-    b.style.background = ''; b.style.borderColor = '';
-  });
-  btn.style.background = '#E3F2FD';
-  btn.style.borderColor = '#2196F3';
-  selectedMC = val;
-}
-
-// ==============================
-// CHECK ANSWER
-// ==============================
-function checkAnswer() {
-  if (answered) return;
-  const q = questions[current];
-  let userAns = '';
-  let correct = false;
-
-  if (q.type === 'verb') {
-    if (!selectedVerb) { shake(); return; }
-    userAns = selectedVerb;
-    correct = userAns.toLowerCase() === q.answer.toLowerCase();
-    document.querySelectorAll('.option-btn').forEach(btn => {
-      btn.disabled = true;
-      btn.style.background = '';
-      btn.style.borderColor = '';
-      if (btn.dataset.val.toLowerCase() === q.answer.toLowerCase()) {
-        btn.classList.add('correct');
-      } else if (btn.dataset.val === userAns && !correct) {
-        btn.classList.add('wrong');
-      }
-    });
-    selectedVerb = null;
-
-  } else if (q.type === 'mc') {
-    if (!selectedMC) { shake(); return; }
-    userAns = selectedMC;
-    correct = userAns === q.answer;
-    document.querySelectorAll('.option-btn').forEach(btn => {
-      btn.disabled = true;
-      btn.style.background = '';
-      btn.style.borderColor = '';
-      if (btn.dataset.val === q.answer) {
-        btn.classList.add('correct');
-      } else if (btn.dataset.val === userAns && !correct) {
-        btn.classList.add('wrong');
-      }
-    });
-    selectedMC = null;
-
-  } else if (q.type === 'fill') {
-    const inp = document.getElementById('fillInput');
-    userAns = inp.value.trim().toLowerCase();
-    correct = userAns === q.answer.toLowerCase();
-    inp.disabled = true;
-    inp.classList.add(correct ? 'correct' : 'wrong');
-
-  } else if (q.type === 'rearr') {
-    userAns = sentenceWords.join(' ').toLowerCase().trim();
-    correct = userAns === q.answer.toLowerCase().trim();
-    // Highlight tiles
-    const sentDiv = document.getElementById('sentDrop');
-    if (sentDiv) sentDiv.style.background = correct ? '#E8F5E9' : '#FFEBEE';
+function checkAnswer(){
+  if(answered)return;
+  const q=Qs[cur];let correct=false;
+  if(q.type==='mc2'||q.type==='mc4'||q.type==='demo'){
+    if(!selOpt){shakeCard();return;}
+    correct=selOpt===q.ans;
+    document.querySelectorAll('.opt-btn').forEach(btn=>{
+      btn.disabled=true;btn.style.background='';btn.style.borderColor='';
+      if(btn.dataset.v===q.ans)btn.classList.add('correct');
+      else if(btn.dataset.v===selOpt&&!correct)btn.classList.add('wrong');
+    });selOpt=null;
+  } else if(q.type==='rearr'){
+    if(!rearWords.length){shakeCard();return;}
+    correct=rearWords.join(' ').toLowerCase().trim()===q.ans.toLowerCase().trim();
+    const sd=document.getElementById('sentDrop');
+    if(sd)sd.style.background=correct?'#F0FDF4':'#FFF1F2';
   }
-
-  answered = true;
-  if (correct) {
-    score++;
-    sectionScores[q.section]++;
-  }
-
-  showFeedback(correct, q.tip);
-  document.getElementById('btnCheck').style.display = 'none';
-  document.getElementById('btnNext').style.display = 'inline-block';
-  document.getElementById('liveScore').textContent = score;
+  answered=true;
+  if(correct){score++;secSc[q.sec]++;}
+  document.getElementById('liveScore').textContent=score;
+  const fb=document.getElementById('fb');
+  fb.className='fb show '+(correct?'ok':'no');
+  fb.innerHTML=(correct?'<b>Benar!</b> ':'<b>Salah.</b> ')+q.tip;
+  document.getElementById('btnCheck').style.display='none';
+  document.getElementById('btnNext').style.display='inline-block';
 }
 
-function showFeedback(correct, tip) {
-  const fb = document.getElementById('feedback');
-  fb.className = 'feedback show ' + (correct ? 'correct' : 'wrong');
-  fb.innerHTML = correct
-    ? `✅ <b>Benar!</b> ${tip}`
-    : `❌ <b>Salah.</b> ${tip}`;
+function shakeCard(){
+  const c=document.getElementById('qCard');
+  c.style.transform='translateX(-7px)';
+  setTimeout(()=>c.style.transform='translateX(7px)',80);
+  setTimeout(()=>c.style.transform='',160);
 }
 
-function shake() {
-  const card = document.getElementById('questionCard');
-  card.style.animation = 'none';
-  card.style.transform = 'translateX(-8px)';
-  setTimeout(() => { card.style.transform = 'translateX(8px)'; }, 80);
-  setTimeout(() => { card.style.transform = ''; card.style.animation = ''; }, 160);
-}
+function nextQuestion(){cur++;if(cur>=Qs.length)showResult();else renderQ();}
 
-// ==============================
-// NEXT
-// ==============================
-function nextQuestion() {
-  current++;
-  if (current >= questions.length) {
-    showResult();
-  } else {
-    renderQuestion();
-  }
-}
-
-// ==============================
-// RESULT
-// ==============================
-function showResult() {
+async function showResult(){
   showScreen('result');
-  document.getElementById('finalScore').textContent = score;
+  document.getElementById('finalScore').textContent=score;
+  const pct=score/Qs.length;
+  let title,msg;
+  if(pct===1){title='Sempurna!';msg='Nilai 100! Kamu luar biasa!';}
+  else if(pct>=.8){title='Hebat!';msg='Hampir sempurna, terus berlatih!';}
+  else if(pct>=.6){title='Bagus!';msg='Kerja bagus! Belajar lagi untuk nilai lebih tinggi.';}
+  else if(pct>=.4){title='Terus Semangat!';msg='Jangan menyerah, coba lagi!';}
+  else{title='Ayo Belajar Lagi!';msg='Pelajari materinya, kamu pasti bisa lebih baik!';}
+  document.getElementById('resultTitle').textContent=title;
+  document.getElementById('resultMsg').textContent=msg;
 
-  let emoji, title, msg;
-  const pct = score / questions.length;
-  if (pct === 1) {
-    emoji = '🏆'; title = 'SEMPURNA!';
-    msg = 'Kamu luar biasa! Nilai kamu 100! Kamu bintang bahasa Inggris! ⭐';
-  } else if (pct >= 0.8) {
-    emoji = '🎉'; title = 'Hebat Sekali!';
-    msg = 'Hampir sempurna! Terus berlatih dan kamu pasti bisa 100! 💪';
-  } else if (pct >= 0.6) {
-    emoji = '😊'; title = 'Bagus!';
-    msg = 'Kerja bagus! Belajar lagi untuk hasil yang lebih baik! 📚';
-  } else if (pct >= 0.4) {
-    emoji = '🌱'; title = 'Terus Semangat!';
-    msg = 'Jangan menyerah! Ulangi materi dan coba lagi! 💡';
-  } else {
-    emoji = '📖'; title = 'Ayo Belajar Lagi!';
-    msg = 'Tidak apa-apa! Belajar lagi dan kamu pasti bisa lebih baik! 🌟';
-  }
-
-  document.getElementById('resultEmoji').textContent = emoji;
-  document.getElementById('resultTitle').textContent = title;
-  document.getElementById('gradeMsg').textContent = msg;
-
-  const secScoreDiv = document.getElementById('sectionScores');
-  const secInfo = [
-    { label: '🔤 Verb s/es',     s: 1, color: '#2DC653' },
-    { label: '📝 Pilihan Ganda', s: 2, color: '#2196F3' },
-    { label: '📖 Isi Cerita',    s: 3, color: '#9C27B0' },
-    { label: '🧩 Susun Kalimat', s: 4, color: '#E91E8C' }
+  const si=[
+    {s:1,label:'Verb s/es',color:'var(--green)'},
+    {s:2,label:'Pilihan Ganda',color:'var(--blue)'},
+    {s:3,label:'Demonstrative',color:'var(--indigo)'},
+    {s:4,label:'Susun Kalimat',color:'var(--pink)'}
   ];
-  secScoreDiv.innerHTML = secInfo.map(si =>
-    `<div class="sec-score-item">
-      <span><span class="dot" style="background:${si.color}"></span>${si.label}</span>
-      <b>${sectionScores[si.s]}/5</b>
-    </div>`
-  ).join('');
+  document.getElementById('secBreakdown').innerHTML=si.map(x=>`
+    <div class="sec-item">
+      <div class="sec-left"><div class="sec-bar" style="background:${x.color}"></div><span>${x.label}</span></div>
+      <span class="sec-num">${secSc[x.s]}<span style="font-size:.7rem;color:var(--muted)">/5</span></span>
+    </div>`).join('');
 
-  if (pct >= 0.6) celebrate();
+  if(pct>=.6)celebrate();
+  await saveRanking();
+  await loadRanking();
 }
 
-function celebrate() {
-  const emojis = ['🎉','🌟','⭐','🎊','✨','🏆','🎈'];
-  for (let i = 0; i < 18; i++) {
-    setTimeout(() => {
-      const el = document.createElement('div');
-      el.className = 'particle';
-      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      el.style.left = Math.random() * 100 + 'vw';
-      el.style.animationDuration = (2 + Math.random() * 2) + 's';
-      el.style.fontSize = (1.2 + Math.random()) + 'rem';
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 4000);
-    }, i * 120);
+/* ─── RANKING ─── */
+async function saveRanking(){
+  try{
+    let all=[];
+    try{const r=await window.storage.get('eq_rankings',true);if(r)all=JSON.parse(r.value);}catch(e){}
+    const ts=Date.now();myEntryTs=ts;
+    const d=new Date();
+    const dateStr=d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+    all.push({name:playerName,score,date:dateStr,ts});
+    all=all.slice(-200);
+    await window.storage.set('eq_rankings',JSON.stringify(all),true);
+  }catch(e){console.error('Save failed:',e);}
+}
+
+async function loadRanking(){
+  const el=document.getElementById('rankContent');
+  try{
+    let all=[];
+    try{const r=await window.storage.get('eq_rankings',true);if(r)all=JSON.parse(r.value);}catch(e){}
+    if(!all.length){el.innerHTML='<div class="rk-msg">Belum ada peserta lain. Kamu yang pertama!</div>';return;}
+    all.sort((a,b)=>b.score-a.score||(b.ts-a.ts));
+    let html=`<table class="rank-table"><thead><tr>
+      <th>#</th><th>Nama</th><th>Score</th><th>Tanggal</th>
+    </tr></thead><tbody>`;
+    all.forEach((e,i)=>{
+      const r=i+1;
+      let nc='rno';
+      if(r===1)nc='rn1';else if(r===2)nc='rn2';else if(r===3)nc='rn3';
+      const isMe=e.ts===myEntryTs&&e.name===playerName;
+      let pc='sp-lo';if(e.score>=16)pc='sp-hi';else if(e.score>=10)pc='sp-mi';
+      html+=`<tr class="${isMe?'row-you':''}">
+        <td><div class="rank-num ${nc}">${r}</div></td>
+        <td>${esc(e.name)}${isMe?' <b>(kamu)</b>':''}</td>
+        <td><span class="sp ${pc}">${e.score}/20</span></td>
+        <td><span class="rk-date">${e.date||''}</span></td>
+      </tr>`;
+    });
+    html+='</tbody></table>';
+    el.innerHTML=html;
+  }catch(e){el.innerHTML='<div class="rk-msg">Gagal memuat peringkat.</div>';}
+}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function celebrate(){
+  const shapes=['★','◆','●','▲','■'],colors=['#FACC15','#22C55E','#3B82F6','#EC4899','#F97316'];
+  for(let i=0;i<16;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');el.className='spark';
+      el.textContent=shapes[Math.floor(Math.random()*shapes.length)];
+      el.style.left=Math.random()*100+'vw';
+      el.style.color=colors[Math.floor(Math.random()*colors.length)];
+      el.style.animationDuration=(2+Math.random()*1.5)+'s';
+      el.style.fontSize=(1+Math.random()*.8)+'rem';
+      document.body.appendChild(el);setTimeout(()=>el.remove(),3500);
+    },i*100);
   }
 }
 
-// ==============================
-// RETRY
-// ==============================
-function retryQuiz() {
-  current = 0;
-  score = 0;
-  sectionScores = {1:0, 2:0, 3:0, 4:0};
-  answered = false;
-  selectedVerb = null;
-  selectedMC   = null;
-  sentenceWords = [];
+function retryQuiz(){
+  cur=0;score=0;secSc={1:0,2:0,3:0,4:0};
+  answered=false;selOpt=null;rearWords=[];myEntryTs=0;
   showScreen('welcome');
 }
 </script>
